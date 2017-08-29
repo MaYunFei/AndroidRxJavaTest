@@ -14,7 +14,7 @@ public class ObservableSubscribeOn<T> extends AbstractObservableWithUpstream<T,T
     protected void subscribeActual(final Observer<? super T> observer) {
         SubscribeOnObserver parent = new SubscribeOnObserver(observer); //可取消的
         Thread thread = new Thread(new Task(parent),"io thread");
-        thread.run();
+        thread.start();
     }
 
     class Task implements Runnable{

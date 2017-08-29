@@ -41,89 +41,100 @@ public class MainActivity extends AppCompatActivity {
 //                        Log.e("log", "error = " + throwable);
 //                    }
 //                });
-
-        io.github.mayunfei.rx.Observable.create(new io.github.mayunfei.rx.Observable<String>() {
+        new Thread(new Runnable() {
             @Override
-            protected void subscribeActual(io.github.mayunfei.rx.Observer<? super String> observer) {
-                observer.onNext("hello");
-                observer.onNext("world");
-                observer.onComplete();
-            }
-        }).map(new io.github.mayunfei.rx.Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                return s+"  888";
-            }
-        })
-
-                .subscribe(new io.github.mayunfei.rx.Observer<String>() {
-            @Override
-            public void onNext(String s) {
-                Log.i(TAG,s);
-            }
-
-            @Override
-            public void onComplete() {
-                Log.i(TAG,"onComplete");
-            }
-
-            @Override
-            public void onError() {
-
-            }
-        });
-
-        Observable.create(new ObservableOnSubscribe<String>() {
-            @Override
-            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
-                Log.i(TAG, "create thread = " + Thread.currentThread().toString());
-                e.onNext("Hello");
-                e.onComplete();
-            }
-        })
-                .doOnSubscribe(new Consumer<Disposable>() {
+            public void run() {
+                io.github.mayunfei.rx.Observable.create(new io.github.mayunfei.rx.Observable<String>() {
                     @Override
-                    public void accept(@NonNull Disposable disposable) throws Exception {
-                        Log.i(TAG, "doOnSubscribe thread = " + Thread.currentThread().toString());
+                    protected void subscribeActual(io.github.mayunfei.rx.Observer<? super String> observer) {
+                        Log.e(TAG,"subscribeActual" +" "+ Thread.currentThread().getName());
+                        observer.onNext("hello");
+                        observer.onNext("world");
+                        observer.onComplete();
                     }
                 })
 
-                .subscribeOn(Schedulers.io())
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(@NonNull String s) throws Exception {
-                        Log.i(TAG, "map thread = " + Thread.currentThread().toString());
-                        return s + " World";
-                    }
-                })
+                        .subscribeOn()
+                        .map(new io.github.mayunfei.rx.Function<String, String>() {
+                            @Override
+                            public String apply(String s) {
+                                Log.e(TAG,"map" +" "+ Thread.currentThread().getName());
+                                return s + "  888";
+                            }
+                        })
+                        .observeOn()
+                        .subscribe(new io.github.mayunfei.rx.Observer<String>() {
+                            @Override
+                            public void onNext(String s) {
+                                Log.e(TAG,"subscribe" +" "+ Thread.currentThread().getName());
+                                Log.i(TAG, s);
+                            }
 
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-                        Log.i(TAG, "onSubscribe thread = " + Thread.currentThread().toString());
-                    }
+                            @Override
+                            public void onComplete() {
+                                Log.i(TAG, "onComplete");
+                            }
 
-                    @Override
-                    public void onNext(@NonNull String s) {
-                        Log.e(TAG, s);
-                    }
+                            @Override
+                            public void onError() {
 
-                    @Override
-                    public void onError(@NonNull Throwable e) {
+                            }
+                        });
+            }
+        }).start();
 
-                    }
 
-                    @Override
-                    public void onComplete() {
-
-                    }
-
-                    @Override
-                    public String toString() {
-                        return super.toString();
-                    }
-                });
+//        Observable.create(new ObservableOnSubscribe<String>() {
+//            @Override
+//            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+//                Log.i(TAG, "create thread = " + Thread.currentThread().toString());
+//                e.onNext("Hello");
+//                e.onComplete();
+//            }
+//        })
+//                .doOnSubscribe(new Consumer<Disposable>() {
+//                    @Override
+//                    public void accept(@NonNull Disposable disposable) throws Exception {
+//                        Log.i(TAG, "doOnSubscribe thread = " + Thread.currentThread().toString());
+//                    }
+//                })
+//
+//                .subscribeOn(Schedulers.io())
+//                .map(new Function<String, String>() {
+//                    @Override
+//                    public String apply(@NonNull String s) throws Exception {
+//                        Log.i(TAG, "map thread = " + Thread.currentThread().toString());
+//                        return s + " World";
+//                    }
+//                })
+//
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Observer<String>() {
+//                    @Override
+//                    public void onSubscribe(@NonNull Disposable d) {
+//                        Log.i(TAG, "onSubscribe thread = " + Thread.currentThread().toString());
+//                    }
+//
+//                    @Override
+//                    public void onNext(@NonNull String s) {
+//                        Log.e(TAG, s);
+//                    }
+//
+//                    @Override
+//                    public void onError(@NonNull Throwable e) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//
+//                    @Override
+//                    public String toString() {
+//                        return super.toString();
+//                    }
+//                });
 
 
 //      Observable.just("Hello")
